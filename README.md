@@ -32,7 +32,7 @@ http://localhost:8000/pages/login/
 - Criar um usuário e testar os serviços disponíveis no site.
 
 
-# Em outro terminal:
+# Em outro terminal(também com ambiente virtual ativado):
 
 - Testar a API para criar um usuário, os métodos POST e PUT são suportados. Depois é possível ver o novo usuário no banco de dados, ou fazer login no browser ou com a API.
 
@@ -80,7 +80,7 @@ curl -d '{"old_password":"resh5678", "new_password":"resh1234"}' -H "Content-Typ
 ```
 
 
-- Testando a API de mudar dados do usuário:
+- Testando a API de mudar dados do usuário(não são permitidos campos em branco!):
 
 ```
 curl -d '{"username":"Resh", "email":"resh@email.com", "phone":"995725731", "first_name":"Resh", "last_name":"Cyber"}' -H "Content-Type: application/json" -H "Authorization: Token token_gerado" -X POST http://localhost:8000/pages/change_info/
@@ -116,7 +116,7 @@ curl -H "Authorization: Token token_gerado" -X DELETE http://localhost:8000/page
 
 - Apps criados por mim são somente users e pages, também são usados os apps do rest_framework padrão e para gerar tokens. O app fontawesome-free é usado para estilizar o frontend com ícones.
 
-- Como formulários HTML suportam apenas os métodos GET e POST, esses são os métodos são usados quando a requisição é feita pelo browser, quando feita pelo curl, pode-se usar o verbo PUT e DELETE.
+- Como formulários HTML suportam apenas os métodos GET e POST, esses são os métodos são usados quando a requisição é feita pelo browser, quando feita pelo curl, pode-se usar o verbo PUT e DELETE. Também por essa razão algumas requisições feitas com POST pelo curl não geram mensagens de confirmação como aquelas feitas com PUT. 
 
 - Não é possível criar usuários com o mesmo email ou com o mesmo username, se acontecer uma requisição deste tipo ela será descartada.
 

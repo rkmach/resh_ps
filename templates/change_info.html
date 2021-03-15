@@ -26,6 +26,7 @@
 {% if user.is_authenticated %}
 
 <h2 class="m-2 display-4 text-center">Atualize seus dados.</h2>
+<small class="text-center">Preencha todos os campos!</small>
 <h5 class="m-2 display-5 text-center">Seus dados atuais são:</h5><br>
     <table style="width:75%" class="table data-table">
         <tr>
@@ -36,8 +37,8 @@
         </tr>
         <tr>
         <td>{{ user.get_full_name }}</td>
-        <td>{{ user.get_username }}</td>
-        <td>{{ user.email }}</td>
+        <td id="username">{{ user.get_username }}</td>
+        <td id="email">{{ user.email }}</td>
         <td>{{ user.phone }}</td>
         </tr>
     </table> 

@@ -2,7 +2,7 @@ from .models import MyUser
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 
-#isso aqui é como se fosse meu template(forma de representar os dados)
+#serializers tem funções importantes, como criar, atualizar, validar, serializar, além de propriedades para forms
 class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(label="Nome de Usuário", max_length=50)
     first_name = serializers.CharField(label="Primeiro Nome", max_length=50)

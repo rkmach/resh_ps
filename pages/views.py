@@ -30,29 +30,29 @@ class RegisterView(APIView):
     authentication_classes = [TokenAuthentication, SessionAuthentication, BasicAuthentication]
     template_name = "register.html"
 
-    def get(self, request):
+    def get(self, request):     #método get simplismente renderiza o formulário. Os campos foram definidos no serializer.
         serializer = RegisterSerializer()
         return render(request, "register.html", {"serializer": serializer})
 
-    def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
+    def post(self, request):    #trata dos dados vindos do formulário
+        serializer = RegisterSerializer(data=request.data)      #serializando os dados
         if(serializer.is_valid()):
             username = serializer.validated_data['username']
             email = serializer.validated_data['email']
-            if MyUser.objects.filter(email=email).exists() or MyUser.objects.filter(username=username).exists():
+            if MyUser.objects.filter(email=email).exists() or MyUser.objects.filter(username=username).exists():    #email e username são chaves primárias.
                 return redirect("pages:register")
-            if serializer.validated_data['password'] == serializer.validated_data['password2']:
-                serializer.validated_data.pop("password2")
-                new_user = serializer.create(serializer.validated_data)
+            if serializer.validated_data['password'] == serializer.validated_data['password2']:     #se as senhas não forem iguais só recarrega a página.
+                serializer.validated_data.pop("password2")  
+                new_user = serializer.create(serializer.validated_data) #função definida no serializer que retorna um usuário com os campos preenchidos.
                 new_user.set_password(serializer.validated_data['password'])
-                new_user.save()
-                login(request, new_user)
+                new_user.save() #novo usuário salvo no bd
+                login(request, new_user)    #novo usuário é loggado automaticamente.
                 return redirect("pages:home")
             else:
                 return redirect("pages:register")
         return render(request, "register.html", {"serializer": serializer})
 
-    def put(self, request):
+    def put(self, request):     #trata dos dados vindos pela API(json)
         serializer = RegisterSerializer(data=request.data)
         if(serializer.is_valid()):
             username = serializer.validated_data['username']
@@ -87,15 +87,15 @@ class MyUserLoginView(APIView):
         if(serializer.is_valid()):
             username = serializer.validated_data['username']
             password = serializer.validated_data['password']
-            user = EmailOrUsernameModelBackend.authenticate(self, request, username=username, password=password)
-            if user is not None and user.is_active:
+            user = EmailOrUsernameModelBackend.authenticate(self, request, username=username, password=password)    #essa linha garante que a autenticação pode ser
+            if user is not None and user.is_active:                                                                 # feita por email ou username
                 login(request, user)
                 return redirect("pages:home")
             else:
                 return redirect("pages:login")
         return render(request, "login.html", {"serializer": serializer})
 
-class LogoutPageView(LogoutView):
+class LogoutPageView(LogoutView):       #View de logout padrão do django
     pass
 
 class ChangePasswordView(APIView):
@@ -117,10 +117,10 @@ class ChangePasswordView(APIView):
             if not user.check_password(serializer.validated_data.get("old_password")):
                 return redirect("pages:change_password")
             
-            user.set_password(serializer.validated_data.get("new_password"))
-            user.save()
-            login(request, user)
-            return render(request, 'senha_alterada.html', {})
+            user.set_password(serializer.validated_data.get("new_password"))    #settando a nova senha(essa função cuida das hashes)
+            user.save() #salvando as mudanças no bd
+            login(request, user)    #logando com o usuário atualizado
+            return render(request, 'senha_alterada.html', {})   #página de confirmação de senha alterada
 
     def put(self, request):
         serializer = ChangePasswordSerializer(data=request.data)
@@ -142,7 +142,7 @@ class DeleteAccountView(APIView):
 
     def get(self, request):
         user = MyUser.objects.get(username=request.user)
-        user.is_active = False
+        user.is_active = False      #pelo browser, simplismente desativa a conta
         user.save()
         logout(request)
 
@@ -150,7 +150,7 @@ class DeleteAccountView(APIView):
 
     def delete(self, request):
         try :
-            request.user.delete()
+            request.user.delete()   #pela API, exclui o user do bd
             return HttpResponse("Usuário removido com sucesso!\n")
         except:
             return HttpResponse("Não foi possível remover o usuário!\n")
@@ -170,13 +170,13 @@ class ChangeUserInfoView(generics.UpdateAPIView, APIView):
         serializer = UserChangeSerializer(data=request.data)
         if serializer.is_valid():
             username = serializer.validated_data['username']
-            email = serializer.validated_data['email']
+            email = serializer.validated_data['email']     #o usuário não pode mudar seu username e email para o de outro usuário mas pode manter o seu atual.
             if (MyUser.objects.filter(email=email).exists() and MyUser.objects.get(email=email).email != request.user.email) or (MyUser.objects.filter(username=username).exists() and MyUser.objects.get(username=username) != request.user):
                 return redirect("pages:change_info")
             user = MyUser.objects.get(username=request.user)
             
-            updated_user = serializer.update(user, serializer.validated_data)
-            updated_user.save()
+            updated_user = serializer.update(user, serializer.validated_data)   #função de atualização no serializer, precisa de todos os campos preenchidos corretamente!
+            updated_user.save()     #salva alterações no bd
         else:
             redirect("pages:change_info")
 
