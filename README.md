@@ -78,7 +78,7 @@ curl -d '{"username":"Resh", "email":"resh@email.com", "phone":"995725731", "fir
 -Com o método PUT
 
 ```
-curl -d '{"username":"Bolassa", "email":"boleta@email.com", "phone":"995725731", "first_name":"Bola", "last_name":"Marcos"}' -H "Content-Type: application/json" -H "Authorization: Token 8192e4abdba329b89d6f9e2f77b4cf8b342db42a" -X PUT http://localhost:8000/pages/change_info/
+curl -d '{"username":"Resh", "email":"resh@email.com", "phone":"995725731", "first_name":"Resh", "last_name":"Cyber"}' -H "Content-Type: application/json" -H "Authorization: Token token_gerado" -X PUT http://localhost:8000/pages/change_info/
 ```
 
 -Agora é uma boa hora de voltar ao navegador, fazer login com os novos campos e ver os dados atualizados.
