@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% load rest_framework %}
+
+{% load static %}
+
+{%block script%}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+    integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+    crossorigin="anonymous">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+    crossorigin="anonymous">
+</script>
+{% endblock %}
+
+{% block content %}
+
+{% if not user.is_authenticated %}
+
+<div class="container">
+        <div class="row">
+          <div class="col-6">
+            <div class="row login-icon">
+              <i class="fas fa-3x fa-user-secret"></i>
+            </div>
+            <div class="row login-logo">
+              <img src="{% static 'media/resh_log.png' %}" width="auto" height="auto "/>
+            </div>
+          </div>
+            <div class="col-6">
+                <div class="cent-form"></div>
+                <form action="{% url 'pages:login' %}" method="post" novalidate>
+                        {% csrf_token %}
+                        {% render_form serializer %}
+                        <small>Ainda não possui uma conta? <a href="{% url 'pages:register' %}">Registre-se</a> agora</small><br>
+                        <span id='message'></span><br>
+                        <button type="submit" class="btn btn-default btn-success">Entrar</button>
+                </form>
+            </div>
+        </div>
+</div>
+
+{% else %}
+
+<div class="container init">
+  <p>Você já está logado! Para entrar com outra conta clique em 'Ações de Usuário' -> 'Logout'</p>
+</div>
+
+{% endif %}
+
+{% endblock %}

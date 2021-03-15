@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock title %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+<div class="container init">
+
+        <div class="row"></div>
+          <i class="fas fa-3x fa-door-open"></i>
+          <h2 class="m-2 display-4">Parabéns! Você está logado.</h2>
+          <p><small class="text-muted">Clique em 'Ações de Usuário' caso queira alterar seus dados, fazer logout ou excluir seu cadastro.</small></p>
+    
+    <div class="init"></div>
+    <table style="width:75%" class="table table-striped data-table">
+        <tr>
+        <th>Nome Completo</th>
+        <th>Nome de Usuário</th>
+        <th>Email</th>
+        <th>Telefone</th>
+        <th>Senha</th>
+        </tr>
+        <tr>
+        <td>{{ user.get_full_name }}</td>
+        <td>{{ user.get_username }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.phone }}</td>
+        <td>*************</td>
+        </tr>
+    </table> 
+
+</div>
+
+{% else %}
+
+<div class="container init">
+    <p>Você precisa estar logado para acessar sua page home!!</p>
+</div>
+
+{% endif %}
+
+{% endblock content %}

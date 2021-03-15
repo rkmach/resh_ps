@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% load rest_framework %}
+
+{% load static %}
+
+{% block title %}Register{% endblock title %}
+
+{% block script %}
+
+<script src="{% static 'js/script.js' %}"></script>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+        <div class="row">
+                <div class="col-6">
+                        <div class="row register-icon">
+                                <i class="fab fa-4x fa-wpforms"></i>
+                        </div>
+                        <div class="row register-logo">
+                          <img src="{% static 'media/resh_log.png' %}" width="auto" height="auto "/>
+                        </div>
+                </div>
+            
+            
+                <div class="col-6">
+                <div class="cent-form">
+                        <form action="{% url 'pages:register' %}" method="post" novalidate>
+                                {% csrf_token %}
+                                {% render_form serializer %}
+                                <span id='message'></span><br>
+                                <button type="submit" class="btn btn-default btn-success">Registrar</button>
+                        </form>        
+                </div>        
+            </div>
+        </div>
+</div>
+
+{% endblock %}
