@@ -39,11 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #myapps
     'users.apps.UsersConfig',
+    'pages.apps.PagesConfig',
     #apps de terceiros
     'rest_framework',
     'rest_framework.authtoken',
-    "debug_toolbar",
-    "crispy_forms",
     'fontawesome-free',
 ]
 
@@ -55,7 +54,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'resh_ps.urls'
@@ -136,15 +134,8 @@ STATICFILES_DIRS = (
 
 # django-debug
 
-import socket  # noqa
-
-hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-INTERNAL_IPS = [ip[:-1] + "1" for ip in ips]
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    # ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
             'rest_framework.authentication.BasicAuthentication',
             'rest_framework.authentication.SessionAuthentication',
@@ -167,12 +158,7 @@ LOGIN_REDIRECT_URL = "../pages/registration/"
 LOGIN_URL = "../login"
 LOGOUT_REDIRECT_URL = "../login"
 
-#media
+#media(imagens)
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-#crispy package (forms mais elegantes)
-
-CRISPY_TEMPLATE_PACK = "bootstrap4"
-

@@ -37,18 +37,18 @@ class LoginSerializer(serializers.ModelSerializer):
 
 
 class ChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(label="Senha Antiga", write_only=True, required=True, validators=[validate_password], style={'input_type': 'password', 'placeholder': 'Password'})
-    new_password = serializers.CharField(label="Nova Senha",write_only=True, required=True, style={'input_type': 'password', 'placeholder': 'Password'})
+    old_password = serializers.CharField(label="Senha Antiga", write_only=True, required=True, validators=[validate_password])
+    new_password = serializers.CharField(label="Nova Senha",write_only=True, required=True, style={'input_type': 'password', 'placeholder': '8+ caracteres'})
     class Meta:
         model = MyUser
         fields = ['old_password', 'new_password']
 
 class UserChangeSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(label="Nome de Usuário", max_length=50)
-    first_name = serializers.CharField(label="Primeiro Nome", max_length=50)
-    last_name = serializers.CharField(label="Último Nome", max_length=50)
-    email = serializers.EmailField(label="Email", max_length=50)
-    phone = serializers.CharField(label="Telefone", max_length=15)
+    username = serializers.CharField(label="Nome de Usuário", max_length=50, required=True)
+    first_name = serializers.CharField(label="Primeiro Nome", max_length=50, required=True)
+    last_name = serializers.CharField(label="Último Nome", max_length=50, required=True)
+    email = serializers.EmailField(label="Email", max_length=50, required=True)
+    phone = serializers.CharField(label="Telefone", max_length=15, required=True)
 
     class Meta:
         model = MyUser

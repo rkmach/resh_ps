@@ -1,26 +1,19 @@
 from users.models import MyUser
 from rest_framework import viewsets, serializers
-from rest_framework import permissions
 from users.serializers import RegisterSerializer, LoginSerializer, ChangePasswordSerializer, UserChangeSerializer
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
-from rest_framework import viewsets
 from django.shortcuts import render, redirect
 from rest_framework import status
 from rest_framework import generics
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import login, logout, authenticate
-from django.views.generic import TemplateView, UpdateView, DeleteView
-from users.forms import RegisterAPIRenderer
-from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
+from django.views.generic import TemplateView
+from django.contrib.auth.views import LogoutView
 from users.backends import EmailOrUsernameModelBackend
-
-from rest_framework.exceptions import APIException
-from django.utils.encoding import force_text
+from django.http import HttpResponse
 from rest_framework import status
 
 from django.core import serializers as core_serializers
@@ -59,6 +52,24 @@ class RegisterView(APIView):
                 return redirect("pages:register")
         return render(request, "register.html", {"serializer": serializer})
 
+    def put(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if(serializer.is_valid()):
+            username = serializer.validated_data['username']
+            email = serializer.validated_data['email']
+            if MyUser.objects.filter(email=email).exists() or MyUser.objects.filter(username=username).exists():
+                return HttpResponse("Nome de Usuário ou email informado já existe! Escolha outro.\n")
+            if serializer.validated_data['password'] == serializer.validated_data['password2']:
+                serializer.validated_data.pop("password2")
+                new_user = serializer.create(serializer.validated_data)
+                new_user.set_password(serializer.validated_data['password'])
+                new_user.save()
+                login(request, new_user)
+                return HttpResponse("Registro criado com sucesso!\n")
+            else:
+                return HttpResponse("Senhas informadas não são iguais!\n")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
+
 class MyUserLoginView(APIView):
     model = MyUser
     serializer_class = LoginSerializer
@@ -80,7 +91,6 @@ class MyUserLoginView(APIView):
             if user is not None and user.is_active:
                 login(request, user)
                 return redirect("pages:home")
-                # return Response(status=status.HTTP_200_OK)
             else:
                 return redirect("pages:login")
         return render(request, "login.html", {"serializer": serializer})
@@ -117,12 +127,11 @@ class ChangePasswordView(APIView):
         if serializer.is_valid():
             user = MyUser.objects.get(username=request.user)
             if not user.check_password(serializer.validated_data.get("old_password")):
-                return redirect("pages:change_password")
+                return HttpResponse("Senha Atual não é a senha que foi digitada!\n")
             
             user.set_password(serializer.validated_data.get("new_password"))
             user.save()
-            content = {'Mensagem': 'Parabéns! Você alterou sua senha com sucesso!'}
-            return Response(status=status.HTTP_200_OK)
+            return HttpResponse("Senha Atualizada com Sucesso!\n")
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -142,11 +151,9 @@ class DeleteAccountView(APIView):
     def delete(self, request):
         try :
             request.user.delete()
-            print("tou no try")
-            return Response(status=status.HTTP_200_OK)
+            return HttpResponse("Usuário removido com sucesso!\n")
         except:
-            print("tou no except")
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return HttpResponse("Não foi possível remover o usuário!\n")
 
 class ChangeUserInfoView(generics.UpdateAPIView, APIView):
     model = MyUser
@@ -154,7 +161,6 @@ class ChangeUserInfoView(generics.UpdateAPIView, APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = UserChangeSerializer
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = "success.html"
 
     def get(self, request):
         serializer = UserChangeSerializer()
@@ -168,10 +174,11 @@ class ChangeUserInfoView(generics.UpdateAPIView, APIView):
             if (MyUser.objects.filter(email=email).exists() and MyUser.objects.get(email=email).email != request.user.email) or (MyUser.objects.filter(username=username).exists() and MyUser.objects.get(username=username) != request.user):
                 return redirect("pages:change_info")
             user = MyUser.objects.get(username=request.user)
+            
             updated_user = serializer.update(user, serializer.validated_data)
             updated_user.save()
         else:
-            redirect("pages:login")
+            redirect("pages:change_info")
 
         return redirect("pages:home")
 
@@ -181,13 +188,11 @@ class ChangeUserInfoView(generics.UpdateAPIView, APIView):
             username = serializer.validated_data['username']
             email = serializer.validated_data['email']
             if (MyUser.objects.filter(email=email).exists() and MyUser.objects.get(email=email).email != request.user.email) or (MyUser.objects.filter(username=username).exists() and MyUser.objects.get(username=username) != request.user):
-                content = {"mensagem":"Nome de usuário ou email já em uso"}
-                return Response(content, status=status.HTTP_403_FORBIDDEN)
+                return HttpResponse("Nome de usuário ou email já em uso!\n")
             user = MyUser.objects.get(username=request.user)
             updated_user = serializer.update(user, serializer.validated_data)
             updated_user.save()
-            content = {"mensagem":"Dados atualizados com sucesso"}
-            return Response(status=status.HTTP_202_ACCEPTED)
+            return HttpResponse("Dados atualizados com sucesso!\n")
         else:
            return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
