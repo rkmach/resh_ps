@@ -37,7 +37,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
 
 class ChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(label="Senha Antiga", write_only=True, required=True, validators=[validate_password], style={'input_type': 'password'})
+    old_password = serializers.CharField(label="Senha Antiga", write_only=True, required=True, validators=[validate_password], style={'input_type': 'password', 'placeholder': '8+ caracteres'})
     new_password = serializers.CharField(label="Nova Senha",write_only=True, required=True, style={'input_type': 'password', 'placeholder': '8+ caracteres'})
     class Meta:
         model = MyUser
